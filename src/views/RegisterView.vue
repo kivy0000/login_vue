@@ -1,36 +1,25 @@
 <template>
-  <div class="el-carousel">
-    <!-- (走马灯未使用)背景 -->
-    <el-carousel :autoplay="false" :interval="8000" height="100%" arrow="never">
-      <!--      <el-carousel-item>-->
-      <!--        <el-image style="width: 100%; height: 100%" :src="require('../assets/logo.jpg')" :fit="fill" />-->
-      <!--      </el-carousel-item>-->
-
-      <!--      <el-carousel-item>-->
-      <!--        <el-image style="width: 100%; height: 100%" :src="require('../assets/logo3.jpg')" :fit="fill" />-->
-      <!--      </el-carousel-item>-->
-      <!--      <el-carousel-item>-->
-      <el-image style="width: 100%; height: 100%" :src="require('../assets/logo3.jpg')"/>
-      <!--      </el-carousel-item>-->
-      <!--      <el-carousel-item>-->
-      <!--        <el-image style="width: 30%; height: 100%" :src="require('../assets/logo4.jpg')" :fit="fill" />-->
-      <!--      </el-carousel-item>-->
-    </el-carousel>
-  </div>
 
 
   <!--  注册页面  -->
   <div class="login-container">
+    <div class="el-carousel">
+      <div class="imgeBack">
+        <el-image :src="require('../assets/logo3.jpg')"/>
+      </div>
 
-    <el-card class="login-card" style="z-index: 1;height: 75%;">
+
+    </div>
+
+    <el-card class="login-card">
       <el-image class="logo-image" :src="require('../assets/logo.jpg')"
-                />
+      />
 
       <el-text tag="b" align="center"
                size="large"
                style="display: flex; justify-content: center;
                 align-items: center; text-align: center;
-                 font-size: 24px;margin-top: 30px;">
+                 font-size: 20px;margin-top: 30px;">
         BOM注册测试界面
       </el-text>
       <!-- 注册表单     -->
@@ -111,11 +100,13 @@ export default {
                     () => {
                       //将注册表单数据转交到登陆页面
                       localStorage.setItem('loginData', JSON.stringify(this.form));
+                      //注册完成使验证码失效
+                      this.form.icode = '';
                       this.jumpRouter('/');
                     }
                 );
               } else {
-                this.open("注册失败，请检查账户名/邮箱是否已经注册", 'error')
+                this.open("注册失败，请检查账户名/邮箱", 'error')
               }
             }
         )
@@ -127,42 +118,51 @@ export default {
 
     /**获取验证码的方法*/
     getVcode(vemail) {
-      //向后端发送请求验证码的通知
-      request.put("/api", this.form).then(
-          res => {
-            console.log(res)
+      var demo = 400;
+      if (this.form.username === '' || this.form.username === null || this.form.password === '' || this.form.password === null) {
+        this.open("请输入账号/密码", 'warning');
+        return;
+      }
+      //向后端发送请求验证码的通知,异步，
+      request.put("/api", this.form).then(res => {
+            console.log(res);
+            //接收状态码
+            demo = res.code;
             //判断验证码是否发送成功
             if (res.code === 200) {
               this.open('向' + vemail + '发送验证码成功', "success");
               this.form.icode = res.vcode
+            } else if (res.code === 300) {
+              this.open("该账号/邮箱已注册", 'warning');
             } else {
-              this.open("验证码发送失败,邮箱错误或已注册", 'warning')
+              this.open("发送验证码失败，请检查账号/邮箱", 'error');
             }
+            //验证码每60s点击一次,本地处理，较快
+            if (this.form.registerTime > 0) {//如果已经在计时
+              return;
+              //错误访问，不计时
+            }
+            if (demo === 400 || demo === 300) {
+              return;
+            }
+            //否则，开始计时
+            this.form.registerTime = 60;
+            //按时间减少
+            const timer = setInterval(() => {
+              this.form.registerTime--;
+              //计时结束
+              if (this.form.registerTime === 0) {
+                clearInterval(timer);
+                this.form.disabledButton = false;
+                this.form.registerText = '获取';
+                //正在计时
+              } else {
+                this.form.disabledButton = true;
+                this.form.registerText = `${this.form.registerTime}秒后获取`;
+              }
+            }, 1000);
           }
       );
-      //验证码每60s点击一次
-      if (this.form.registerTime > 0) {//如果已经在计时
-        return;
-      }
-      //否则，开始计时
-      this.form.registerTime = 60;
-
-      //按时间减少
-      const timer = setInterval(() => {
-        this.form.registerTime--;
-
-        //计时结束
-        if (this.form.registerTime === 0) {
-          clearInterval(timer);
-          this.form.disabledButton = false;
-          this.form.registerText = '获取';
-          //正在计时
-        } else {
-          this.form.disabledButton = true;
-          this.form.registerText = `${this.form.registerTime}秒后获取`;
-        }
-      }, 1000);
-
     },
 
 
@@ -176,7 +176,7 @@ export default {
         message: str,
         type: type,
         duration: duration, //等待时间
-        onClose: onClose,
+        onClose: onClose, //是否有关掉框
       })
     },
   },
@@ -217,6 +217,8 @@ export default {
 }
 
 .login-card {
+  z-index: 1;
+  height: 75%;
   width: 330px;
   padding: 10px;
   margin-top: 30px;
@@ -239,7 +241,13 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+
   z-index: 0;
+}
+
+.imgeBack {
+  width: fit-content;
+  height: fit-content;
 }
 
 .logo-image {

@@ -1,36 +1,23 @@
 <template>
-  <div class="el-carousel">
-    <!-- (走马灯未使用)背景 -->
-    <el-carousel :autoplay="true" :interval="8000" height="100%" arrow="never">
-      <!--      <el-carousel-item>-->
-      <!--        <el-image style="width: 100%; height: 100%" :src="require('../assets/logo.jpg')" :fit="fill" />-->
-      <!--      </el-carousel-item>-->
-
-      <!--      <el-carousel-item>-->
-      <!--        <el-image style="width: 100%; height: 100%" :src="require('../assets/logo3.jpg')" :fit="fill" />-->
-      <!--      </el-carousel-item>-->
-      <!--      <el-carousel-item>-->
-      <el-image style="width: 100%; height: 100%" :src="require('../assets/logo3.jpg')" :fit="fill"/>
-      <!--      </el-carousel-item>-->
-      <!--      <el-carousel-item>-->
-      <!--        <el-image style="width: 30%; height: 100%" :src="require('../assets/logo4.jpg')" :fit="fill" />-->
-      <!--      </el-carousel-item>-->
-    </el-carousel>
-  </div>
-
-
   <!--  登陆页面  -->
   <div class="login-container">
+<!--  背景部分  -->
+    <div class="el-carousel">
+      <div class="imgeBack">
+        <el-image :src="require('../assets/logo3.jpg')"/>
+      </div>
+    </div>
 
+<!--   登录卡片   -->
     <el-card class="login-card" style="z-index: 1;height: 75%;">
       <el-image class="logo-image" :src="require('../assets/logo.jpg')"
-                :fit="fill"/>
+      />
 
       <el-text tag="b" align="center"
                size="large"
                style="display: flex; justify-content: center;
                 align-items: center; text-align: center;
-                 font-size: 24px;margin-top: 30px;">
+                 font-size: 20px;margin-top: 30px;">
         BOM登陆测试界面
       </el-text>
       <!-- 登陆表单     -->
@@ -45,9 +32,9 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" size="default"  @click="LoginOpen">登录</el-button>
+            <el-button type="primary" size="default" @click="notiOpen('123','error')">登录</el-button>
             <el-button type="primary" size="default" @click="jumpRouter('/register')">注册</el-button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <el-link type="primary">忘记密码?</el-link>
+            <el-link  type="primary">忘记密码?</el-link>
           </el-form-item>
 
 
@@ -64,7 +51,7 @@
 <script>
 import {reactive} from 'vue';
 import {ElMessage} from 'element-plus'
-import { ElNotification } from 'element-plus'
+import {ElNotification} from 'element-plus'
 //引入axios对象
 import request from "@/utils/request";
 
@@ -76,7 +63,7 @@ export default {
     //从注册页面填充（如果有）
     const parse = JSON.parse(localStorage.getItem('loginData'));
 
-    if (parse!==null){
+    if (parse !== null) {
       console.log(parse);
       this.form = parse;
 
@@ -101,15 +88,44 @@ export default {
         onClose: onClose,
       })
     },
+    //侧面弹窗方法
+    /**
+     * @param str 提示信息
+     * @param type 提示类型 success、warning等
+     */
+    notiOpen(title, type) {
+      if (type==='success'){
+        ElNotification.success({
+          title: '登录成功',
+          offset: 50,
+          duration: 4500,
+        })
+      }else if (type==='warning'){
+        ElNotification.warning({
+          title: '用户未注册',
+          offset: 50,
+          duration: 4500,
+        })
+      }else {
+        ElNotification.error({
+          title: '账号或密码错误',
+          offset: 50,
+          duration: 4500,
+        })
+      }
+
+    },
 
     /**
      * 登陆方法
      */
     userLogin() {
-            //登陆逻辑
+      //登陆逻辑
 
+      this.open("用户未注册", "warning", 4000);
       //登陆成功
-            this.open("登陆成功", 'success', 3000)
+      this.open("登陆成功", 'success', 3000);
+
     }
   },
   setup() {
@@ -125,8 +141,7 @@ export default {
 
     const LoginOpen = () => {
       ElNotification.success({
-        title: 'Success',
-        message: '登陆成功',
+        title: '登录成功',
         offset: 50,
         duration: 4500,
       })
@@ -154,9 +169,9 @@ export default {
 
 .login-card {
   width: 330px;
-  padding: 10px;
-  margin-top: 30px;
-  margin-right: 20px;
+  padding: 20px;
+  /*margin-top: 30px;*/
+  /*margin-right: 20px;*/
 
 
 }
@@ -189,6 +204,10 @@ export default {
   height: 50%;
   margin: auto; /* 居中显示 */
   justify-content: center; /* 居中对齐 */
+}
+.imgeBack {
+  width: fit-content;
+  height: fit-content;
 }
 
 </style>
