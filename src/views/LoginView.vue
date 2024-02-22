@@ -45,7 +45,7 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" size="default" @click="userLogin">登录</el-button>
+            <el-button type="primary" size="default"  @click="LoginOpen">登录</el-button>
             <el-button type="primary" size="default" @click="jumpRouter('/register')">注册</el-button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <el-link type="primary">忘记密码?</el-link>
           </el-form-item>
@@ -63,6 +63,8 @@
 
 <script>
 import {reactive} from 'vue';
+import {ElMessage} from 'element-plus'
+import { ElNotification } from 'element-plus'
 //引入axios对象
 import request from "@/utils/request";
 
@@ -86,6 +88,20 @@ export default {
       this.$router.push(str);
     },
 
+    //弹窗方法
+    /**
+     * @param str 提示信息
+     * @param type 提示类型 success、warning等
+     */
+    open(str, type, duration, onClose) {
+      ElMessage({
+        message: str,
+        type: type,
+        duration: duration, //等待时间
+        onClose: onClose,
+      })
+    },
+
     /**
      * 登陆方法
      */
@@ -93,27 +109,33 @@ export default {
             //登陆逻辑
 
       //登陆成功
-            this.open("注册成功，3秒后自动返回登陆页面", 'success', 3000)
+            this.open("登陆成功", 'success', 3000)
     }
   },
   setup() {
+    //也可以在script中直接添加表单
     const form = reactive({
       username: '',
       password: '',
-      email: '',
-      vcode: '',
-      disabledButton: false,
-      registerText: '获取', //获取验证码按钮
-      registerTime: 0, //获取验证码倒计时
-      icode: '',//服务端获取的验证码
+
     });
     const carouselIndex = reactive({
       index: 0,
     });
 
+    const LoginOpen = () => {
+      ElNotification.success({
+        title: 'Success',
+        message: '登陆成功',
+        offset: 50,
+        duration: 4500,
+      })
+    };
+
     return {
       form,
       carouselIndex,
+      LoginOpen,
     };
   },
 };

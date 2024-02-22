@@ -24,7 +24,7 @@
 
     <el-card class="login-card" style="z-index: 1;height: 75%;">
       <el-image class="logo-image" :src="require('../assets/logo.jpg')"
-                :fit="fill"/>
+                />
 
       <el-text tag="b" align="center"
                size="large"
