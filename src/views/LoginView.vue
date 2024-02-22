@@ -1,42 +1,43 @@
 <template>
   <div class="el-carousel">
     <!-- (走马灯未使用)背景 -->
-    <el-carousel :autoplay="true"  :interval="8000" height="100%" arrow="never" >
-<!--      <el-carousel-item>-->
-<!--        <el-image style="width: 100%; height: 100%" :src="require('../assets/logo.jpg')" :fit="fill" />-->
-<!--      </el-carousel-item>-->
+    <el-carousel :autoplay="true" :interval="8000" height="100%" arrow="never">
+      <!--      <el-carousel-item>-->
+      <!--        <el-image style="width: 100%; height: 100%" :src="require('../assets/logo.jpg')" :fit="fill" />-->
+      <!--      </el-carousel-item>-->
 
-<!--      <el-carousel-item>-->
-<!--        <el-image style="width: 100%; height: 100%" :src="require('../assets/logo3.jpg')" :fit="fill" />-->
-<!--      </el-carousel-item>-->
-<!--      <el-carousel-item>-->
-        <el-image  style="width: 100%; height: 100%" :src="require('../assets/logo3.jpg')" :fit="fill" />
-<!--      </el-carousel-item>-->
-<!--      <el-carousel-item>-->
-<!--        <el-image style="width: 30%; height: 100%" :src="require('../assets/logo4.jpg')" :fit="fill" />-->
-<!--      </el-carousel-item>-->
+      <!--      <el-carousel-item>-->
+      <!--        <el-image style="width: 100%; height: 100%" :src="require('../assets/logo3.jpg')" :fit="fill" />-->
+      <!--      </el-carousel-item>-->
+      <!--      <el-carousel-item>-->
+      <el-image style="width: 100%; height: 100%" :src="require('../assets/logo3.jpg')" :fit="fill"/>
+      <!--      </el-carousel-item>-->
+      <!--      <el-carousel-item>-->
+      <!--        <el-image style="width: 30%; height: 100%" :src="require('../assets/logo4.jpg')" :fit="fill" />-->
+      <!--      </el-carousel-item>-->
     </el-carousel>
   </div>
 
 
   <!--  登陆页面  -->
-  <div class="login-container" >
+  <div class="login-container">
 
     <el-card class="login-card" style="z-index: 1;height: 75%;">
-      <el-image  class="logo-image" :src="require('../assets/logo.jpg')"
-                 :fit="fill" />
+      <el-image class="logo-image" :src="require('../assets/logo.jpg')"
+                :fit="fill"/>
 
       <el-text tag="b" align="center"
                size="large"
                style="display: flex; justify-content: center;
                 align-items: center; text-align: center;
                  font-size: 24px;margin-top: 30px;">
-        登陆测试界面</el-text>
+        BOM登陆测试界面
+      </el-text>
       <!-- 登陆表单     -->
       <div class="formStyle">
         <el-form :model="form" label-width="80px" class="login-form">
 
-          <el-form-item label="账号"  style="font-size: 20px">
+          <el-form-item label="账号" style="font-size: 20px">
             <el-input v-model="form.username"></el-input>
           </el-form-item>
           <el-form-item label="密码">
@@ -44,9 +45,9 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" size="default" @click="login">登录</el-button>
-            <el-button type="primary" size="default"@click="jumpRouter('/register')" >注册</el-button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <el-link type="primary" >忘记密码?</el-link>
+            <el-button type="primary" size="default" @click="userLogin">登录</el-button>
+            <el-button type="primary" size="default" @click="jumpRouter('/register')">注册</el-button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <el-link type="primary">忘记密码?</el-link>
           </el-form-item>
 
 
@@ -62,20 +63,49 @@
 
 <script>
 import {reactive} from 'vue';
+//引入axios对象
+import request from "@/utils/request";
 
 export default {
   name: 'Login',
   components: {},
-  methods:{
+  // 初始化钩子函数，不在method里面
+  created() {
+    //从注册页面填充（如果有）
+    const parse = JSON.parse(localStorage.getItem('loginData'));
+
+    if (parse!==null){
+      console.log(parse);
+      this.form = parse;
+
+    }
+  },
+  methods: {
     //跳转路由的方法
-    jumpRouter(str){
+    jumpRouter(str) {
       this.$router.push(str);
+    },
+
+    /**
+     * 登陆方法
+     */
+    userLogin() {
+            //登陆逻辑
+
+      //登陆成功
+            this.open("注册成功，3秒后自动返回登陆页面", 'success', 3000)
     }
   },
   setup() {
     const form = reactive({
       username: '',
       password: '',
+      email: '',
+      vcode: '',
+      disabledButton: false,
+      registerText: '获取', //获取验证码按钮
+      registerTime: 0, //获取验证码倒计时
+      icode: '',//服务端获取的验证码
     });
     const carouselIndex = reactive({
       index: 0,
@@ -91,12 +121,13 @@ export default {
 
 <style scoped>
 .login-container {
+  z-index: 1;
   display: flex;
-  justify-content: end;/*靠右*/
-  align-items: center;/* 靠上*/
+  justify-content: center; /*靠右*/
+  align-items: center; /* 靠上*/
   height: 80vh;
   margin-right: 5vh;
-  opacity: 0.88;/*透明度*/
+  opacity: 0.88; /*透明度*/
 }
 
 .login-card {
@@ -107,6 +138,7 @@ export default {
 
 
 }
+
 .el-link {
   margin-right: 4px;
   font-size: 12px;
@@ -117,7 +149,6 @@ export default {
   margin-right: 30px;
   margin-left: -30px;
   font-size: 50px;
-
 
 
 }
