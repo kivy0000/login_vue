@@ -1,15 +1,15 @@
 <template>
   <!--  登陆页面  -->
   <div class="login-container">
-<!--  背景部分  -->
+    <!--  背景部分  -->
     <div class="el-carousel">
       <div class="imgeBack">
         <el-image :src="require('../assets/logo3.jpg')"/>
       </div>
     </div>
 
-<!--   登录卡片   -->
-    <el-card class="login-card" style="z-index: 1;height: 75%;">
+    <!--   登录卡片   -->
+    <el-card class="login-card" style="z-index: 1">
       <el-image class="logo-image" :src="require('../assets/logo.jpg')"
       />
 
@@ -25,16 +25,22 @@
         <el-form :model="form" label-width="80px" class="login-form">
 
           <el-form-item label="账号" style="font-size: 20px">
-            <el-input v-model="form.username"></el-input>
+            <el-input v-model="form.username" placeholder="请输入账号"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="form.password" type="password"></el-input>
+            <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" size="default" @click="notiOpen('123','error')">登录</el-button>
-            <el-button type="primary" size="default" @click="jumpRouter('/register')">注册</el-button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <el-link  type="primary">忘记密码?</el-link>
+            <el-button type="primary" style="width: 280px;margin: auto" size="large" @click="notiOpen('123','error')">登录
+            </el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary"  style="width: 280px;margin: auto" size="large" @click="jumpRouter('/register')">注册
+            </el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-link type="primary">忘记密码?</el-link>
           </el-form-item>
 
 
@@ -58,15 +64,22 @@ import request from "@/utils/request";
 export default {
   name: 'Login',
   components: {},
+  Rparse: {},
+
   // 初始化钩子函数，不在method里面
   created() {
+    this.Rparse = {};
     //从注册页面填充（如果有）
-    const parse = JSON.parse(localStorage.getItem('loginData'));
-
-    if (parse !== null) {
-      console.log(parse);
-      this.form = parse;
-
+    this.Rparse = JSON.parse(localStorage.getItem('loginData'));
+    if (this.Rparse !== null) {
+      console.log(this.Rparse);
+      if (this.Rparse.username) {
+        this.form.username = this.Rparse.username;
+      }
+      if (this.Rparse.password) {
+        this.form.password = this.Rparse.password;
+      }
+      localStorage.clear();
     }
   },
   methods: {
@@ -94,19 +107,19 @@ export default {
      * @param type 提示类型 success、warning等
      */
     notiOpen(title, type) {
-      if (type==='success'){
+      if (type === 'success') {
         ElNotification.success({
           title: '登录成功',
           offset: 50,
           duration: 4500,
         })
-      }else if (type==='warning'){
+      } else if (type === 'warning') {
         ElNotification.warning({
           title: '用户未注册',
           offset: 50,
           duration: 4500,
         })
-      }else {
+      } else {
         ElNotification.error({
           title: '账号或密码错误',
           offset: 50,
@@ -133,24 +146,17 @@ export default {
     const form = reactive({
       username: '',
       password: '',
-
+      email: '',
+      vcode: '',
+      disabledButton: false,
+      registerText: '获取', //获取验证码按钮
+      registerTime: 0, //获取验证码倒计时
+      icode: '',//服务端获取的验证码
     });
-    const carouselIndex = reactive({
-      index: 0,
-    });
 
-    const LoginOpen = () => {
-      ElNotification.success({
-        title: '登录成功',
-        offset: 50,
-        duration: 4500,
-      })
-    };
 
     return {
       form,
-      carouselIndex,
-      LoginOpen,
     };
   },
 };
@@ -162,21 +168,21 @@ export default {
   display: flex;
   justify-content: center; /*靠右*/
   align-items: center; /* 靠上*/
-  height: 80vh;
-  margin-right: 5vh;
+  height: 90vh;
   opacity: 0.88; /*透明度*/
 }
 
 .login-card {
+  z-index: 1;
+  height: 75%;
   width: 330px;
-  padding: 20px;
-  /*margin-top: 30px;*/
-  /*margin-right: 20px;*/
+  padding: 15px;
 
 
 }
 
 .el-link {
+  margin-top: -10px;
   margin-right: 4px;
   font-size: 12px;
 }
@@ -205,6 +211,7 @@ export default {
   margin: auto; /* 居中显示 */
   justify-content: center; /* 居中对齐 */
 }
+
 .imgeBack {
   width: fit-content;
   height: fit-content;

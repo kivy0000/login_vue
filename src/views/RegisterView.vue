@@ -77,7 +77,6 @@ export default {
   name: 'register',
   components: {},
 
-
   methods: {
 
     //跳转路由的方法
@@ -192,14 +191,9 @@ export default {
       registerTime: 0, //获取验证码倒计时
       icode: '',//服务端获取的验证码
     });
-    const carouselIndex = reactive({
-      index: 0,
-    });
-
 
     return {
       form,
-      carouselIndex,
     };
   },
 };
@@ -211,8 +205,7 @@ export default {
   display: flex;
   justify-content: center; /*靠右*/
   align-items: center; /* 靠上*/
-  height: 80vh;
-  margin-right: 5vh;
+  height: 90vh;
   opacity: 0.88; /*透明度*/
 }
 
@@ -220,10 +213,7 @@ export default {
   z-index: 1;
   height: 75%;
   width: 330px;
-  padding: 10px;
-  margin-top: 30px;
-  margin-right: 20px;
-
+  padding: 15px;
 }
 
 
@@ -241,7 +231,6 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-
   z-index: 0;
 }
 
