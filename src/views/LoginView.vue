@@ -13,7 +13,7 @@
       <el-image class="logo-image" :src="require('../assets/logo.jpg')"
       />
 
-      <el-text tag="b" align="center"
+      <el-text class="titleText" tag="b" align="center"
                size="large"
                style="display: flex; justify-content: center;
                 align-items: center; text-align: center;
@@ -46,8 +46,6 @@
 
         </el-form>
       </div>
-
-
     </el-card>
 
   </div>
@@ -163,6 +161,8 @@ export default {
 </script>
 
 <style scoped>
+
+/* 登陆页面 */
 .login-container {
   z-index: 1;
   display: flex;
@@ -171,16 +171,19 @@ export default {
   height: 90vh;
   opacity: 0.88; /*透明度*/
 }
-
+/*登录卡片*/
 .login-card {
   z-index: 1;
   height: 75%;
   width: 330px;
   padding: 15px;
 
+}
+/**/
+.titleText{
 
 }
-
+/*忘记密码*/
 .el-link {
   margin-top: -10px;
   margin-right: 4px;
