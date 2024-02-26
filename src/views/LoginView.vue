@@ -8,7 +8,8 @@
       </div>
     </div>
     <!--  忘记密码弹窗-->
-    <el-dialog  class="dialogPassword"  style="width: 330px;height: 460px" title="找回密码" v-model="this.dialogVisible" >
+    <el-dialog class="dialogPassword" style="width: 330px;height: 460px"
+               title="找回密码" v-model="this.logform.dialogVisible">
       <!--   重置密码表单   -->
       <el-form :model="reform" label-width="80px" class="login-form">
 
@@ -17,8 +18,7 @@
         </el-form-item>
 
 
-
-        <el-form-item label="邮箱" style="font-size: 20px" >
+        <el-form-item label="邮箱" style="font-size: 20px">
           <el-input v-model="reform.email" placeholder="请输入邮箱"></el-input>
         </el-form-item>
 
@@ -39,7 +39,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" size="large" style="width: 320px" @click="registerUser">重置
+          <el-button type="primary" size="large" style="width: 320px" @click="resetPassword">重置
           </el-button>
         </el-form-item>
       </el-form>
@@ -69,15 +69,16 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" style="width: 280px;margin: auto" size="large" @click="notiOpen('123','error')">登录
+            <el-button type="primary" style="width: 280px;margin: auto" size="large" @click="userLogin">登录
             </el-button>
+
           </el-form-item>
           <el-form-item>
             <el-button type="primary" style="width: 280px;margin: auto" size="large" @click="jumpRouter('/register')">注册
             </el-button>
           </el-form-item>
           <el-form-item>
-            <el-link type="primary">忘记密码?</el-link>
+            <el-link type="primary" @click="userForget">忘记密码?</el-link>
           </el-form-item>
 
         </el-form>
@@ -98,7 +99,6 @@ import request from "@/utils/request";
 export default {
   name: 'Login',
   components: {},
-  Rparse: {},
   created() {
     this.Rparse = {};
     //从注册页面填充（如果有）
@@ -120,6 +120,11 @@ export default {
       this.$router.push(str);
     },
 
+    //打开忘记密码表单
+    userForget() {
+      this.logform.dialogVisible = true;
+    },
+
     //弹窗方法
     /**
      * @param str 提示信息
@@ -136,9 +141,11 @@ export default {
 
     /**重置获取验证码的方法*/
     getVcode(vemail) {
+      this.reform.disabledButton = true;
       var demo = 400;
       if (this.reform.username === '' || this.reform.username === null || this.reform.email === '' || this.reform.email === null) {
         this.open("请输入账号/邮箱", 'warning');
+        this.reform.disabledButton = false;
         return;
       }
       //向后端发送重置密码通知,异步，
@@ -147,23 +154,24 @@ export default {
             //接收状态码
             demo = res.code;
             //判断验证码是否发送成功
-            if (res.code === 200) {
+            if (demo === 200) {
               this.open('向' + vemail + '发送验证码成功', "success");
               this.reform.icode = res.vcode
-            } else if (res.code === 300) {
+            } else if (demo === 300) {
               this.open("该账号未注册，请注册", 'warning');
-            } else if (res.code === 500) {
+            } else if (demo === 500) {
               this.open("账号/邮箱不匹配，请检查", 'warning');
-            }
-            else {
+            } else {
               this.open("发送验证码失败，请检查账号/邮箱", 'error');
             }
             //验证码每60s点击一次,本地处理，较快
             if (this.reform.registerTime > 0) {//如果已经在计时
+              this.reform.disabledButton = false;
               return;
               //错误访问，不计时
             }
             if (demo === 400 || demo === 300) {
+              this.reform.disabledButton = false;
               return;
             }
             //否则，开始计时
@@ -187,7 +195,7 @@ export default {
     },
 
     /**重置密码的方法*/
-    resetPassword(str) {
+    resetPassword() {
       //判断验证码是否正确
       if (this.reform.icode === this.reform.vcode && this.reform.icode !== '') {
         request.put("/api/resetPassword", this.reform).then(res => {
@@ -199,7 +207,8 @@ export default {
                       //注册完成使验证码失效
                       this.reform.icode = '';
                       //关闭页面
-                      this.dialogVisible = false;
+                      this.logform.dialogVisible = false;
+
                     }
                 );
               } else {
@@ -247,12 +256,51 @@ export default {
     userLogin() {
       //登陆逻辑
 
-      this.open("用户未注册", "warning", 4000);
+
       //登陆成功
-      this.open("登陆成功", 'success', 3000);
+      this.notiOpen("登陆成功", 'success');
 
     }
   },
+  /*
+
+  在Vue3中，setup()函数是用来代替以前Vue2中的data()、methods()等选项
+    setup()和data()的区别主要在于，data()是一个函数，返回一个对象，而setup()是一个函数，返回一个对象或者一个函数。setup()函数是在组件实例创建之前执行的，可以在setup()中创建响应式数据和引用数据。
+
+  在Vue3中，可以使用reactive、ref等方法来创建响应式数据和引用数据。reactive()方法用来创建一个响应式对象，ref()方法用来创建一个包装对象，这个包装对象有一个.value属性来存储值。
+
+  下面是一个简单的示例代码，演示了在Vue3中使用setup()函数创建响应式数据和引用数据：
+
+  ```javascript
+  <template>
+    <div>
+      {{ count }}
+      <button @click="increase">Increase</button>
+    </div>
+  </template>
+
+  <script>
+  import { ref } from 'vue';
+
+  export default {
+    setup() {
+      const count = ref(0);
+
+      const increase = () => {
+        count.value++;
+      };
+
+      return {
+        count,
+        increase
+      };
+    }
+  };
+  ```
+  在上面的代码中，我们使用ref()方法创建了一个包装对象count，然后在setup()函数中返回了count和increase两个属性，count是一个响应式数据，increase是一个函数，用来增加count的值。当点击按钮时，count的值会增加。
+
+  通过这种方式，我们可以在Vue3中使用setup()函数来创建响应式数据和引用数据，从而实现数据的响应式更新。
+  */
   setup() {
     //也可以在script中直接添加表单
     //登陆表单
@@ -277,13 +325,15 @@ export default {
       registerTime: 0, //获取验证码倒计时
       icode: '',//服务端获取的验证码
     });
-    let dialogVisible = true;
+    const logform = reactive({
+      dialogVisible: false,
+    });
 
 
     return {
       form,
-      dialogVisible,
       reform,
+      logform,
     };
   },
 };
@@ -316,7 +366,7 @@ export default {
 }
 
 /*忘记密码弹窗 */
-.dialogPassword{
+.dialogPassword {
 }
 
 /*忘记密码*/

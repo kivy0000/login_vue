@@ -76,7 +76,6 @@ import request from "@/utils/request";
 export default {
   name: 'register',
   components: {},
-
   methods: {
 
     //跳转路由的方法
@@ -117,9 +116,13 @@ export default {
 
     /**获取验证码的方法*/
     getVcode(vemail) {
+      //防止大量验证码发送
+      this.form.disabledButton = true;
+
       var demo = 400;
       if (this.form.username === '' || this.form.username === null || this.form.password === '' || this.form.password === null) {
         this.open("请输入账号/密码", 'warning');
+        this.form.disabledButton = false;
         return;
       }
       //向后端发送请求验证码的通知,异步，
@@ -138,10 +141,12 @@ export default {
             }
             //验证码每60s点击一次,本地处理，较快
             if (this.form.registerTime > 0) {//如果已经在计时
+              this.form.disabledButton = false;
               return;
               //错误访问，不计时
             }
             if (demo === 400 || demo === 300) {
+              this.form.disabledButton = false;
               return;
             }
             //否则，开始计时
