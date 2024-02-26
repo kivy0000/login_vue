@@ -26,16 +26,16 @@
       <div class="formStyle">
         <el-form :model="form" label-width="80px" class="login-form">
 
-          <el-form-item label="账号" style="font-size: 20px">
-            <el-input v-model="form.username" placeholder="请输入账号"></el-input>
-          </el-form-item>
+              <el-form-item label="账号" style="font-size: 20px">
+                <el-input v-model="form.username" placeholder="请输入账号"></el-input>
+              </el-form-item>
 
-          <el-form-item label="密码">
-            <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
-          </el-form-item>
+              <el-form-item label="密码">
+                <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
+              </el-form-item>
 
-          <el-form-item label="邮箱" style="font-size: 20px" p>
-            <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
+              <el-form-item label="邮箱" style="font-size: 20px" p>
+              <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
           </el-form-item>
 
           <!--            手机号和验证码-->

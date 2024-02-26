@@ -7,11 +7,48 @@
         <el-image :src="require('../assets/logo3.jpg')"/>
       </div>
     </div>
+    <!--  忘记密码弹窗-->
+    <el-dialog  class="dialogPassword"  style="width: 330px;height: 460px" title="找回密码" v-model="this.dialogVisible" >
+      <!--   重置密码表单   -->
+      <el-form :model="reform" label-width="80px" class="login-form">
+
+        <el-form-item label="账号" style="font-size: 20px">
+          <el-input v-model="reform.username" placeholder="请输入账号"></el-input>
+        </el-form-item>
+
+
+
+        <el-form-item label="邮箱" style="font-size: 20px" >
+          <el-input v-model="reform.email" placeholder="请输入邮箱"></el-input>
+        </el-form-item>
+
+        <el-form-item label="新密码">
+          <el-input v-model="reform.password" type="password" placeholder="请输入新密码"></el-input>
+        </el-form-item>
+
+        <!--            手机号和验证码-->
+        <el-form-item label="验证码" style="font-size: 20px">
+          <el-input v-model="reform.vcode" class="w-50 m-2" placeholder="验证码"
+                    style="width: 115px"/>&nbsp;&nbsp;&nbsp;&nbsp;
+          <el-button type="primary"
+                     size="default"
+                     style="width: 75px"
+                     :disabled="reform.disabledButton"
+                     @click="getVcode(this.reform.email)">{{ reform.registerText }}
+          </el-button>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" size="large" style="width: 320px" @click="registerUser">重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+
+    </el-dialog>
 
     <!--   登录卡片   -->
     <el-card class="login-card" style="z-index: 1">
-      <el-image class="logo-image" :src="require('../assets/logo.jpg')"
-      />
+      <el-image class="logo-image" :src="require('../assets/logo.jpg')"/>
 
       <el-text class="titleText" tag="b" align="center"
                size="large"
@@ -36,13 +73,12 @@
             </el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary"  style="width: 280px;margin: auto" size="large" @click="jumpRouter('/register')">注册
+            <el-button type="primary" style="width: 280px;margin: auto" size="large" @click="jumpRouter('/register')">注册
             </el-button>
           </el-form-item>
           <el-form-item>
             <el-link type="primary">忘记密码?</el-link>
           </el-form-item>
-
 
         </el-form>
       </div>
@@ -63,8 +99,6 @@ export default {
   name: 'Login',
   components: {},
   Rparse: {},
-
-  // 初始化钩子函数，不在method里面
   created() {
     this.Rparse = {};
     //从注册页面填充（如果有）
@@ -79,7 +113,7 @@ export default {
       }
       localStorage.clear();
     }
-  },
+  },/*// 初始化钩子函数，不在method里面*/
   methods: {
     //跳转路由的方法
     jumpRouter(str) {
@@ -99,6 +133,86 @@ export default {
         onClose: onClose,
       })
     },
+
+    /**重置获取验证码的方法*/
+    getVcode(vemail) {
+      var demo = 400;
+      if (this.reform.username === '' || this.reform.username === null || this.reform.email === '' || this.reform.email === null) {
+        this.open("请输入账号/邮箱", 'warning');
+        return;
+      }
+      //向后端发送重置密码通知,异步，
+      request.put("/api/reLogin", this.reform).then(res => {
+            console.log(res);
+            //接收状态码
+            demo = res.code;
+            //判断验证码是否发送成功
+            if (res.code === 200) {
+              this.open('向' + vemail + '发送验证码成功', "success");
+              this.reform.icode = res.vcode
+            } else if (res.code === 300) {
+              this.open("该账号未注册，请注册", 'warning');
+            } else if (res.code === 500) {
+              this.open("账号/邮箱不匹配，请检查", 'warning');
+            }
+            else {
+              this.open("发送验证码失败，请检查账号/邮箱", 'error');
+            }
+            //验证码每60s点击一次,本地处理，较快
+            if (this.reform.registerTime > 0) {//如果已经在计时
+              return;
+              //错误访问，不计时
+            }
+            if (demo === 400 || demo === 300) {
+              return;
+            }
+            //否则，开始计时
+            this.reform.registerTime = 60;
+            //按时间减少
+            const timer = setInterval(() => {
+              this.reform.registerTime--;
+              //计时结束
+              if (this.reform.registerTime === 0) {
+                clearInterval(timer);
+                this.reform.disabledButton = false;
+                this.reform.registerText = '获取';
+                //正在计时
+              } else {
+                this.reform.disabledButton = true;
+                this.reform.registerText = `${this.reform.registerTime}秒后获取`;
+              }
+            }, 1000);
+          }
+      );
+    },
+
+    /**重置密码的方法*/
+    resetPassword(str) {
+      //判断验证码是否正确
+      if (this.reform.icode === this.reform.vcode && this.reform.icode !== '') {
+        request.put("/api/resetPassword", this.reform).then(res => {
+              console.log(res)
+              //判断是否重置成功
+              if (res.code === 200) {
+                this.open("重置密码成功", 'success', 3000,
+                    () => {
+                      //注册完成使验证码失效
+                      this.reform.icode = '';
+                      //关闭页面
+                      this.dialogVisible = false;
+                    }
+                );
+              } else {
+                this.open("重置失败，请检查账户名/邮箱", 'error')
+              }
+            }
+        )
+      } else {
+        this.open("验证码校验失败,请检查", 'warning')
+      }
+
+    },
+
     //侧面弹窗方法
     /**
      * @param str 提示信息
@@ -141,6 +255,7 @@ export default {
   },
   setup() {
     //也可以在script中直接添加表单
+    //登陆表单
     const form = reactive({
       username: '',
       password: '',
@@ -151,10 +266,24 @@ export default {
       registerTime: 0, //获取验证码倒计时
       icode: '',//服务端获取的验证码
     });
+    //重置密码用的表单
+    const reform = reactive({
+      username: '',
+      password: '',
+      email: '',
+      vcode: '',
+      disabledButton: false,
+      registerText: '获取', //获取验证码按钮
+      registerTime: 0, //获取验证码倒计时
+      icode: '',//服务端获取的验证码
+    });
+    let dialogVisible = true;
 
 
     return {
       form,
+      dialogVisible,
+      reform,
     };
   },
 };
@@ -171,6 +300,7 @@ export default {
   height: 90vh;
   opacity: 0.88; /*透明度*/
 }
+
 /*登录卡片*/
 .login-card {
   z-index: 1;
@@ -179,15 +309,21 @@ export default {
   padding: 15px;
 
 }
+
 /**/
-.titleText{
+.titleText {
 
 }
+
+/*忘记密码弹窗 */
+.dialogPassword{
+}
+
 /*忘记密码*/
 .el-link {
   margin-top: -10px;
-  margin-right: 4px;
-  font-size: 12px;
+  /*margin-right: 4px;*/
+  /*font-size: 12px;*/
 }
 
 .login-form {
