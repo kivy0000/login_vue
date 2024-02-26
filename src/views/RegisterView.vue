@@ -1,44 +1,37 @@
 <template>
-
-
   <!--  注册页面  -->
   <div class="login-container">
-    <div class="el-carousel">
-      <div class="imgeBack">
-        <el-image :src="require('../assets/logo3.jpg')"/>
-      </div>
 
-
+    <!-- 背景-->
+    <div class="imgeBack">
+      <el-image :src="require('../assets/logo3.jpg')"/>
     </div>
 
+    <!--注册卡片-->
     <el-card class="login-card">
-      <el-image class="logo-image" :src="require('../assets/logo.jpg')"
-      />
+      <el-image class="logo-image" :src="require('../assets/logo.jpg')"/>
 
-      <el-text tag="b" align="center"
-               size="large"
-               style="display: flex; justify-content: center;
-                align-items: center; text-align: center;
-                 font-size: 20px;margin-top: 30px;">
-        BOM注册测试界面
-      </el-text>
-      <!-- 注册表单     -->
+      <!--  主标题-->
+      <el-text class="titleText" tag="b">BOM注册测试界面</el-text>
+
+      <!-- 注册表单-->
       <div class="formStyle">
         <el-form :model="form" label-width="80px" class="login-form">
 
-              <el-form-item label="账号" style="font-size: 20px">
-                <el-input v-model="form.username" placeholder="请输入账号"></el-input>
-              </el-form-item>
+          <el-form-item label="账号" >
+            <el-input v-model="form.username" placeholder="请输入账号"></el-input>
+          </el-form-item>
 
-              <el-form-item label="密码">
-                <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
-              </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
+          </el-form-item>
 
-              <el-form-item label="邮箱" style="font-size: 20px" p>
-              <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
+          <el-form-item label="邮箱" >
+            <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
           </el-form-item>
 
           <!--            手机号和验证码-->
+          <!--   仍有样式需要调整，目前class和style混合使用       -->
           <el-form-item label="验证码" style="font-size: 20px">
             <el-input v-model="form.vcode" class="w-50 m-2" placeholder="验证码"
                       style="width: 115px"/>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -56,10 +49,8 @@
             <el-link type="primary" @click="jumpRouter('/')">返回登录</el-link>
           </el-form-item>
 
-
         </el-form>
       </div>
-
 
     </el-card>
 
@@ -77,8 +68,7 @@ export default {
   name: 'register',
   components: {},
   methods: {
-
-    //跳转路由的方法
+    /*跳转路由的方法*/
     jumpRouter(str) {
       this.$router.push(str);
     },
@@ -170,8 +160,8 @@ export default {
     },
 
 
-    //弹窗方法
     /**
+     * 弹窗方法
      * @param str 提示信息
      * @param type 提示类型 success、warning等
      */
@@ -184,7 +174,6 @@ export default {
       })
     },
   },
-
   setup() {
     const form = reactive({
       username: '',
@@ -205,6 +194,17 @@ export default {
 </script>
 
 <style scoped>
+
+/*主标题样式*/
+.titleText {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 20px;
+  margin-top: 30px;
+}
+
 .login-container {
   z-index: 1;
   display: flex;
@@ -216,9 +216,10 @@ export default {
 
 .login-card {
   z-index: 1;
-  height: 75%;
+  height: 500px;
   width: 330px;
   padding: 15px;
+  text-align: center;
 }
 
 
@@ -230,18 +231,11 @@ export default {
 
 }
 
-.el-carousel {
+.imgeBack {
   position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   z-index: 0;
-}
-
-.imgeBack {
-  width: fit-content;
-  height: fit-content;
 }
 
 .logo-image {

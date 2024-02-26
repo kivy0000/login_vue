@@ -1,24 +1,23 @@
 <template>
   <!--  登陆页面  -->
   <div class="login-container">
+
     <!--  背景部分  -->
-    <div class="el-carousel">
-      <div class="imgeBack">
-        <el-image :src="require('../assets/logo3.jpg')"/>
-      </div>
+    <div class="imgeBack">
+      <el-image :src="require('../assets/logo3.jpg')"/>
     </div>
+
     <!--  忘记密码弹窗-->
-    <el-dialog class="dialogPassword" style="width: 330px;height: 460px"
-               title="找回密码" v-model="this.logform.dialogVisible">
+    <el-dialog style="width: 330px;height: 460px" title="找回密码" v-model="this.logform.dialogVisible">
+
       <!--   重置密码表单   -->
       <el-form :model="reform" label-width="80px" class="login-form">
 
-        <el-form-item label="账号" style="font-size: 20px">
+        <el-form-item label="账 号">
           <el-input v-model="reform.username" placeholder="请输入账号"></el-input>
         </el-form-item>
 
-
-        <el-form-item label="邮箱" style="font-size: 20px">
+        <el-form-item label="邮 箱">
           <el-input v-model="reform.email" placeholder="请输入邮箱"></el-input>
         </el-form-item>
 
@@ -26,9 +25,9 @@
           <el-input v-model="reform.password" type="password" placeholder="请输入新密码"></el-input>
         </el-form-item>
 
-        <!--            手机号和验证码-->
-        <el-form-item label="验证码" style="font-size: 20px">
-          <el-input v-model="reform.vcode" class="w-50 m-2" placeholder="验证码"
+        <!-- 手机号和验证码-->
+        <el-form-item label="验证码">
+          <el-input v-model="reform.vcode" class="vcodeclass" placeholder="验证码"
                     style="width: 115px"/>&nbsp;&nbsp;&nbsp;&nbsp;
           <el-button type="primary"
                      size="default"
@@ -38,33 +37,30 @@
           </el-button>
         </el-form-item>
 
+        <!--重置        -->
         <el-form-item>
           <el-button type="primary" size="large" style="width: 320px" @click="resetPassword">重置
           </el-button>
         </el-form-item>
       </el-form>
-
     </el-dialog>
 
     <!--   登录卡片   -->
-    <el-card class="login-card" style="z-index: 1">
+    <el-card class="login-card">
+      <!--      logo-->
       <el-image class="logo-image" :src="require('../assets/logo.jpg')"/>
 
-      <el-text class="titleText" tag="b" align="center"
-               size="large"
-               style="display: flex; justify-content: center;
-                align-items: center; text-align: center;
-                 font-size: 20px;margin-top: 30px;">
-        BOM登陆测试界面
-      </el-text>
+      <!--   主标题   -->
+      <el-text class="titleText" tag="b">BOM登陆测试界面</el-text>
+
       <!-- 登陆表单     -->
       <div class="formStyle">
         <el-form :model="form" label-width="80px" class="login-form">
 
-          <el-form-item label="账号" style="font-size: 20px">
+          <el-form-item label="账 号">
             <el-input v-model="form.username" placeholder="请输入账号"></el-input>
           </el-form-item>
-          <el-form-item label="密码">
+          <el-form-item label="密 码">
             <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
           </el-form-item>
 
@@ -101,7 +97,7 @@ export default {
   components: {},
   created() {
     this.Rparse = {};
-    //从注册页面填充（如果有）
+    //从注册页面填充（如果有），通过本地缓存，同样可作为登陆超时判定
     this.Rparse = JSON.parse(localStorage.getItem('loginData'));
     if (this.Rparse !== null) {
       console.log(this.Rparse);
@@ -227,10 +223,10 @@ export default {
      * @param str 提示信息
      * @param type 提示类型 success、warning等
      */
-    notiOpen(title, type) {
+    notiOpen(title, type, username) {
       if (type === 'success') {
         ElNotification.success({
-          title: '登录成功',
+          title: '登陆成功，欢迎您：' + username,
           offset: 50,
           duration: 4500,
         })
@@ -258,7 +254,7 @@ export default {
 
 
       //登陆成功
-      this.notiOpen("登陆成功", 'success');
+      this.notiOpen("登陆成功", 'success', this.form.username);
 
     }
   },
@@ -354,20 +350,23 @@ export default {
 /*登录卡片*/
 .login-card {
   z-index: 1;
-  height: 75%;
+  height: 500px;
   width: 330px;
   padding: 15px;
+  text-align: center;
 
 }
 
-/**/
+/*主标题样式*/
 .titleText {
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 20px;
+  margin-top: 30px;
 }
 
-/*忘记密码弹窗 */
-.dialogPassword {
-}
 
 /*忘记密码*/
 .el-link {
@@ -377,33 +376,27 @@ export default {
 }
 
 .login-form {
+
+  label-width: 80px;
   margin-top: 30px;
   margin-right: 30px;
   margin-left: -30px;
-  font-size: 50px;
+  font-size: 50px
 
 
 }
 
-.el-carousel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-}
 
 .logo-image {
   width: 50%;
   height: 50%;
-  margin: auto; /* 居中显示 */
-  justify-content: center; /* 居中对齐 */
 }
 
 .imgeBack {
-  width: fit-content;
-  height: fit-content;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 </style>
