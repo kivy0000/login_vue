@@ -16,6 +16,7 @@ sessionStorage.setItem('expireTime', expireTime);
 ```
 
 2. 在另一个Vue组件中获取`sessionStorage`中的数据并检查是否已经过期：
+    
 
 ```javascript
 // 在另一个Vue组件中获取sessionStorage中的数据

@@ -39,7 +39,7 @@
 
         <!--重置        -->
         <el-form-item>
-          <el-button type="primary" size="large" style="width: 320px" @click="resetPassword">重置
+          <el-button type="primary" size="large" style="width: 320px" :disabled="resetlock" @click="resetPassword">重置
           </el-button>
         </el-form-item>
       </el-form>
@@ -65,7 +65,8 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" style="width: 280px;margin: auto" size="large" @click="userLogin">登录
+            <el-button type="primary" style="width: 280px;margin: auto" size="large" :disabled="this.form.disabledButton"
+                       @click="userLogin">登录
             </el-button>
 
           </el-form-item>
@@ -91,6 +92,7 @@ import {ElMessage} from 'element-plus'
 import {ElNotification} from 'element-plus'
 //引入axios对象
 import request from "@/utils/request";
+import { ref } from 'vue';
 
 export default {
   name: 'Login',
@@ -152,6 +154,7 @@ export default {
             //判断验证码是否发送成功
             if (demo === 200) {
               this.open('向' + vemail + '发送验证码成功', "success");
+             this.resetlock = false;
               this.reform.icode = res.vcode
             } else if (demo === 300) {
               this.open("该账号未注册，请注册", 'warning');
@@ -250,9 +253,18 @@ export default {
      * 登陆方法
      */
     userLogin() {
+      this.form.disabledButton = true;
+
       //登陆逻辑
+      //账号密码未填充
+      if (!(this.form.username != '' && this.form.username != null
+          && this.form.password != '' && this.form.password != null)) {
+        this.open("请输入账号/密码", 'warning');
+        this.form.disabledButton = false;
+        return;
+      }
 
-
+      //实际验证
       //登陆成功
       this.notiOpen("登陆成功", 'success', this.form.username);
 
@@ -321,15 +333,17 @@ export default {
       registerTime: 0, //获取验证码倒计时
       icode: '',//服务端获取的验证码
     });
+    //使用reactive、ref等方法来创建响应式数据和引用数据
     const logform = reactive({
       dialogVisible: false,
     });
-
+    const resetlock = ref(true);
 
     return {
       form,
       reform,
       logform,
+      resetlock,
     };
   },
 };
