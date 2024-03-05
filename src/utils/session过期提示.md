@@ -1,10 +1,9 @@
-Me:
-vue3如何向session作用域中保存数据，并在其他vue组件中调用，同时让其1小时后过期，代码演示
+`Me:`
+`vue3如何向session作用域中保存数据，并在其他vue组件中调用，同时让其1小时后过期，代码演示`
 
-AI:please wait...
-在Vue3中，可以通过使用`sessionStorage`来保存数据到会话作用域中，并设置一个过期时间来实现数据在一定时间后过期。下面是一个简单的示例代码演示如何实现：
-
-1. 在一个Vue组件中设置数据到`sessionStorage`中并设置过期时间：
+`AI:please wait...`
+`在Vue3中，可以通过使用sessionStorage来保存数据到会话作用域中，并设置一个过期时间来实现数据在一定时间后过期。下面是一个简单的示例代码演示如何实现：`
+`1. 在一个Vue组件中设置数据到sessionStorage中并设置过期时间：`
 
 ```javascript
 // 在一个Vue组件中设置数据到sessionStorage中
