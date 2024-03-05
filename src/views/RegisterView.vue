@@ -19,11 +19,11 @@
         <el-form :model="form" label-width="80px" class="login-form">
 
           <el-form-item label="账号" >
-            <el-input v-model="form.username" placeholder="请输入账号"></el-input>
+            <el-input v-model="username" placeholder="请输入账号"></el-input>
           </el-form-item>
 
           <el-form-item label="密码">
-            <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
+            <el-input v-model="password" type="password" placeholder="请输入密码"></el-input>
           </el-form-item>
 
           <el-form-item label="邮箱" >

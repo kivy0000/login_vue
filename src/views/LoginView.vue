@@ -55,17 +55,19 @@
 
       <!-- 登陆表单     -->
       <div class="formStyle">
-        <el-form :model="form" label-width="80px" class="login-form">
+        <el-form :model="form" label-width="80px" :rules="logrules" class="login-form"  >
 
-          <el-form-item label="账 号">
+<!--   使用 prop指定校验规则       -->
+          <el-form-item label="账 号" prop="username">
             <el-input v-model="form.username" placeholder="请输入账号"></el-input>
           </el-form-item>
-          <el-form-item label="密 码">
+          <el-form-item label="密 码" prop="password" >
             <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" style="width: 280px;margin: auto" size="large" :disabled="this.form.disabledButton"
+            <el-button type="primary" style="width: 280px;margin: auto" size="large"
+                       :disabled="this.form.disabledButton"
                        @click="userLogin">登录
             </el-button>
 
@@ -92,7 +94,7 @@ import {ElMessage} from 'element-plus'
 import {ElNotification} from 'element-plus'
 //引入axios对象
 import request from "@/utils/request";
-import { ref } from 'vue';
+import {ref} from 'vue';
 
 export default {
   name: 'Login',
@@ -154,7 +156,7 @@ export default {
             //判断验证码是否发送成功
             if (demo === 200) {
               this.open('向' + vemail + '发送验证码成功', "success");
-             this.resetlock = false;
+              this.resetlock = false;
               this.reform.icode = res.vcode
             } else if (demo === 300) {
               this.open("该账号未注册，请注册", 'warning');
@@ -273,12 +275,12 @@ export default {
   /*
 
   在Vue3中，setup()函数是用来代替以前Vue2中的data()、methods()等选项
+  注意:v-model=响应式对象,即reactive创建的对象,不包括对象属性,而ref创建的是引用式对象,一般为简单值
+      在没有使用清楚之前,建议使用data和method
+
     setup()和data()的区别主要在于，data()是一个函数，返回一个对象，而setup()是一个函数，返回一个对象或者一个函数。setup()函数是在组件实例创建之前执行的，可以在setup()中创建响应式数据和引用数据。
-
   在Vue3中，可以使用reactive、ref等方法来创建响应式数据和引用数据。reactive()方法用来创建一个响应式对象，ref()方法用来创建一个包装对象，这个包装对象有一个.value属性来存储值。
-
   下面是一个简单的示例代码，演示了在Vue3中使用setup()函数创建响应式数据和引用数据：
-
   ```javascript
   <template>
     <div>
@@ -337,13 +339,32 @@ export default {
     const logform = reactive({
       dialogVisible: false,
     });
-    const resetlock = ref(true);
+    const resetlock = ref(true);//只读变量，地址不变，值变化了
+
+    //前端校验规则,后端校验规则采取提示信息,不再使用表单校验-
+    const logrules = reactive({
+      username: [
+        //对账号的校验规则
+        //  required 是否必填项,已在登陆方法中提示,这里不使用了
+        // message 提示信息
+        //trigger 逻辑触发方式
+        {required: false, message: "请输入账号", trigger: "blur"},
+        {pattern: /^[A-Za-z0-9]{6,18}$/, message: "账号格式错误,长度6-18", trigger: "blur"}
+      ],
+      password: [
+        //密码校验规则
+        {required: false, message: "请输入密码", trigger: "blur"},
+        {pattern: /^[A-Za-z0-9]{6,18}$/, message: "密码格式错误,长度6-18", trigger: "blur"}
+      ],
+
+    })
 
     return {
       form,
       reform,
       logform,
       resetlock,
+      logrules,
     };
   },
 };
