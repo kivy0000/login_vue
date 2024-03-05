@@ -16,23 +16,23 @@
 
       <!-- 注册表单-->
       <div class="formStyle">
-        <el-form :model="form" label-width="80px" class="login-form">
+        <el-form :model="form" label-width="80px" class="login-form" :rules="logrules">
 
-          <el-form-item label="账号" >
-            <el-input v-model="username" placeholder="请输入账号"></el-input>
+          <el-form-item label="账号" prop="username">
+            <el-input v-model="form.username" placeholder="请输入账号"></el-input>
           </el-form-item>
 
-          <el-form-item label="密码">
-            <el-input v-model="password" type="password" placeholder="请输入密码"></el-input>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
           </el-form-item>
 
-          <el-form-item label="邮箱" >
+          <el-form-item label="邮箱" prop="email">
             <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
           </el-form-item>
 
           <!--            手机号和验证码-->
           <!--   仍有样式需要调整，目前class和style混合使用       -->
-          <el-form-item label="验证码" style="font-size: 20px">
+          <el-form-item label="验证码" style="font-size: 20px" prop="vcode">
             <el-input v-model="form.vcode" class="w-50 m-2" placeholder="验证码"
                       style="width: 115px"/>&nbsp;&nbsp;&nbsp;&nbsp;
             <el-button type="primary"
@@ -78,6 +78,14 @@ export default {
     */
     /**注册方法*/
     registerUser(str) {
+      if (this.form.username === '' || this.form.password === '') {
+        this.open("请输入账号/密码", 'warning');
+        return;
+      }
+      if (this.form.vcode === '') {
+        this.open("请输入验证码", 'warning');
+        return;
+      }
       //判断验证码是否正确
       if (this.form.icode === this.form.vcode && this.form.icode !== '') {
         request.put("/api/register", this.form).then(res => {
@@ -186,8 +194,37 @@ export default {
       icode: '',//服务端获取的验证码
     });
 
+    //前端校验规则,后端校验规则采取提示信息,不再使用表单校验-
+    const logrules = reactive({
+      username: [
+        //对账号的校验规则
+        //  required 是否必填项,已在登陆方法中提示,这里不使用了
+        // message 提示信息
+        //trigger 逻辑触发方式
+        {required: false, message: "请输入账号", trigger: "blur"},
+        {pattern: /^[A-Za-z0-9]{6,18}$/, message: "账号格式错误,长度6-18", trigger: "blur"}
+      ],
+      password: [
+        //密码校验规则
+        {required: false, message: "请输入密码", trigger: "blur"},
+        {pattern: /^[A-Za-z0-9]{6,18}$/, message: "密码格式错误,长度6-18", trigger: "blur"}
+      ],
+      email: [
+        //邮箱校验规则
+        {required: false, message: "请输入邮箱", trigger: "blur"},
+        {pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/, message: "邮箱格式错误,请检查", trigger: "blur"}
+      ],
+      vcode: [
+        //验证码校验规则
+        {required: false, message: "请输入验证码", trigger: "blur"},
+        {pattern: /^[0-9]{6}$/, message: "验证码格式错误,请检查", trigger: "blur"}
+      ],
+
+    })
+
     return {
       form,
+      logrules,
     };
   },
 };

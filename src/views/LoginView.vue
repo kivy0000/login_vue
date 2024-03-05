@@ -11,22 +11,22 @@
     <el-dialog style="width: 330px;height: 460px" title="找回密码" v-model="this.logform.dialogVisible">
 
       <!--   重置密码表单   -->
-      <el-form :model="reform" label-width="80px" class="login-form">
+      <el-form :model="reform" label-width="80px" class="login-form" :rules="logrules" >
 
-        <el-form-item label="账 号">
+        <el-form-item label="账 号" prop="username">
           <el-input v-model="reform.username" placeholder="请输入账号"></el-input>
         </el-form-item>
 
-        <el-form-item label="邮 箱">
+        <el-form-item label="邮 箱" prop="email">
           <el-input v-model="reform.email" placeholder="请输入邮箱"></el-input>
         </el-form-item>
 
-        <el-form-item label="新密码">
+        <el-form-item label="新密码" prop="password" >
           <el-input v-model="reform.password" type="password" placeholder="请输入新密码"></el-input>
         </el-form-item>
 
         <!-- 手机号和验证码-->
-        <el-form-item label="验证码">
+        <el-form-item label="验证码" prop="vcode">
           <el-input v-model="reform.vcode" class="vcodeclass" placeholder="验证码"
                     style="width: 115px"/>&nbsp;&nbsp;&nbsp;&nbsp;
           <el-button type="primary"
@@ -272,45 +272,6 @@ export default {
 
     }
   },
-  /*
-
-  在Vue3中，setup()函数是用来代替以前Vue2中的data()、methods()等选项
-  注意:v-model=响应式对象,即reactive创建的对象,不包括对象属性,而ref创建的是引用式对象,一般为简单值
-      在没有使用清楚之前,建议使用data和method
-
-    setup()和data()的区别主要在于，data()是一个函数，返回一个对象，而setup()是一个函数，返回一个对象或者一个函数。setup()函数是在组件实例创建之前执行的，可以在setup()中创建响应式数据和引用数据。
-  在Vue3中，可以使用reactive、ref等方法来创建响应式数据和引用数据。reactive()方法用来创建一个响应式对象，ref()方法用来创建一个包装对象，这个包装对象有一个.value属性来存储值。
-  下面是一个简单的示例代码，演示了在Vue3中使用setup()函数创建响应式数据和引用数据：
-  ```javascript
-  <template>
-    <div>
-      {{ count }}
-      <button @click="increase">Increase</button>
-    </div>
-  </template>
-
-  <script>
-  import { ref } from 'vue';
-
-  export default {
-    setup() {
-      const count = ref(0);
-
-      const increase = () => {
-        count.value++;
-      };
-
-      return {
-        count,
-        increase
-      };
-    }
-  };
-  ```
-  在上面的代码中，我们使用ref()方法创建了一个包装对象count，然后在setup()函数中返回了count和increase两个属性，count是一个响应式数据，increase是一个函数，用来增加count的值。当点击按钮时，count的值会增加。
-
-  通过这种方式，我们可以在Vue3中使用setup()函数来创建响应式数据和引用数据，从而实现数据的响应式更新。
-  */
   setup() {
     //也可以在script中直接添加表单
     //登陆表单
@@ -355,6 +316,16 @@ export default {
         //密码校验规则
         {required: false, message: "请输入密码", trigger: "blur"},
         {pattern: /^[A-Za-z0-9]{6,18}$/, message: "密码格式错误,长度6-18", trigger: "blur"}
+      ],
+      email: [
+        //邮箱校验规则
+        {required: false, message: "请输入邮箱", trigger: "blur"},
+        {pattern: /^[A-Za-z0-9]{6,18}$/, message: "邮箱格式错误,请检查", trigger: "blur"}
+      ],
+      vcode: [
+        //验证码校验规则
+        {required: false, message: "请输入验证码", trigger: "blur"},
+        {pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/, message: "验证码格式错误,请检查", trigger: "blur"}
       ],
 
     })
