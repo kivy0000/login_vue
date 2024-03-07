@@ -124,7 +124,7 @@ export default {
         return;
       }
       //向后端发送请求验证码的通知,异步，
-      request.put("/api", this.form).then(res => {
+      request.put("/api/getVcode", this.form).then(res => {
             console.log(res);
             //接收状态码
             demo = res.code;

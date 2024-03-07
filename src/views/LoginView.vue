@@ -11,7 +11,7 @@
     <el-dialog style="width: 330px;height: 460px" title="找回密码" v-model="this.logform.dialogVisible">
 
       <!--   重置密码表单   -->
-      <el-form :model="reform" label-width="80px" class="login-form" :rules="logrules" >
+      <el-form :model="reform" label-width="80px" class="login-form" :rules="logrules">
 
         <el-form-item label="账 号" prop="username">
           <el-input v-model="reform.username" placeholder="请输入账号"></el-input>
@@ -21,19 +21,17 @@
           <el-input v-model="reform.email" placeholder="请输入邮箱"></el-input>
         </el-form-item>
 
-        <el-form-item label="新密码" prop="password" >
+        <el-form-item label="新密码" prop="password">
           <el-input v-model="reform.password" type="password" placeholder="请输入新密码"></el-input>
         </el-form-item>
 
         <!-- 手机号和验证码-->
         <el-form-item label="验证码" prop="vcode">
-          <el-input v-model="reform.vcode" class="vcodeclass" placeholder="验证码"
-                    style="width: 115px"/>&nbsp;&nbsp;&nbsp;&nbsp;
+          <el-input v-model="reform.vcode" class="vcodeclass" placeholder="验证码" style="width: 115px"/>&nbsp;&nbsp;&nbsp;&nbsp;
           <el-button type="primary"
                      size="default"
                      style="width: 75px"
-                     :disabled="reform.disabledButton"
-                     @click="getVcode(this.reform.email)">{{ reform.registerText }}
+                     :disabled="reform.disabledButton" @click="getVcode(this.reform.email)">{{ reform.registerText }}
           </el-button>
         </el-form-item>
 
@@ -55,20 +53,19 @@
 
       <!-- 登陆表单     -->
       <div class="formStyle">
-        <el-form :model="form" label-width="80px" :rules="logrules" class="login-form"  >
+        <el-form :model="form" label-width="80px" :rules="logrules" class="login-form">
 
-<!--   使用 prop指定校验规则       -->
+          <!--   使用 prop指定校验规则       -->
           <el-form-item label="账 号" prop="username">
             <el-input v-model="form.username" placeholder="请输入账号"></el-input>
           </el-form-item>
-          <el-form-item label="密 码" prop="password" >
+          <el-form-item label="密 码" prop="password">
             <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
           </el-form-item>
 
           <el-form-item>
             <el-button type="primary" style="width: 280px;margin: auto" size="large"
-                       :disabled="this.form.disabledButton"
-                       @click="userLogin">登录
+                       :disabled="this.form.disabledButton" @click="userLogin">登录
             </el-button>
 
           </el-form-item>
@@ -149,7 +146,7 @@ export default {
         return;
       }
       //向后端发送重置密码通知,异步，
-      request.put("/api/reLogin", this.reform).then(res => {
+      request.put("/api/reSetVcode", this.reform).then(res => {
             console.log(res);
             //接收状态码
             demo = res.code;
@@ -228,22 +225,22 @@ export default {
      * @param str 提示信息
      * @param type 提示类型 success、warning等
      */
-    notiOpen(title, type, username) {
+    notiOpen(titles, type, username) {
       if (type === 'success') {
         ElNotification.success({
-          title: '登陆成功，欢迎您：' + username,
+          title: titles + username,
           offset: 50,
           duration: 4500,
         })
       } else if (type === 'warning') {
         ElNotification.warning({
-          title: '用户未注册',
+          title: titles,
           offset: 50,
           duration: 4500,
         })
       } else {
         ElNotification.error({
-          title: '账号或密码错误',
+          title: titles,
           offset: 50,
           duration: 4500,
         })
@@ -256,8 +253,6 @@ export default {
      */
     userLogin() {
       this.form.disabledButton = true;
-
-      //登陆逻辑
       //账号密码未填充
       if (!(this.form.username != '' && this.form.username != null
           && this.form.password != '' && this.form.password != null)) {
@@ -266,9 +261,22 @@ export default {
         return;
       }
 
-      //实际验证
-      //登陆成功
-      this.notiOpen("登陆成功", 'success', this.form.username);
+      //登陆逻辑实际验证
+      request.post("/api/login", this.form).then(res => {
+            console.log(res)
+            console.log(res.info);
+            this.open(res.test, res.vcode);
+            //登陆成功
+            if (res.code === 200) {
+              //保存到session中
+            }
+            this.form.disabledButton = false;
+        //登陆成功
+        this.notiOpen(res.test, res.vcode, this.form.username);
+
+          }
+      )
+
 
     }
   },
@@ -300,15 +308,14 @@ export default {
     const logform = reactive({
       dialogVisible: false,
     });
+
     const resetlock = ref(true);//只读变量，地址不变，值变化了
 
     //前端校验规则,后端校验规则采取提示信息,不再使用表单校验-
     const logrules = reactive({
       username: [
-        //对账号的校验规则
-        //  required 是否必填项,已在登陆方法中提示,这里不使用了
-        // message 提示信息
-        //trigger 逻辑触发方式
+        //账号校验规则
+        //required 是否必填项,已在登陆方法中提示,这里不使用了,message 提示信息,trigger 逻辑触发方式
         {required: false, message: "请输入账号", trigger: "blur"},
         {pattern: /^[A-Za-z0-9]{6,18}$/, message: "账号格式错误,长度6-18", trigger: "blur"}
       ],
@@ -331,16 +338,11 @@ export default {
     })
 
     return {
-      form,
-      reform,
-      logform,
-      resetlock,
-      logrules,
+      form, reform, logform, resetlock, logrules,
     };
   },
 };
 </script>
-
 <style scoped>
 
 /* 登陆页面 */
@@ -373,7 +375,6 @@ export default {
   margin-top: 30px;
 }
 
-
 /*忘记密码*/
 .el-link {
   margin-top: -10px;
@@ -381,6 +382,7 @@ export default {
   /*font-size: 12px;*/
 }
 
+/*登陆表单*/
 .login-form {
 
   label-width: 80px;
@@ -392,12 +394,13 @@ export default {
 
 }
 
-
+/*logo*/
 .logo-image {
   width: 50%;
   height: 50%;
 }
 
+/*背景图*/
 .imgeBack {
   position: absolute;
   width: 100%;
