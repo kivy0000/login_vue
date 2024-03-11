@@ -1,10 +1,11 @@
-`Me:`
-`vue3如何向session作用域中保存数据，并在其他vue组件中调用，同时让其1小时后过期，代码演示`
+<h1>session提示</h1>
+<h2>注意：sessionStorage只有在前端组件中可以获取，后端无法获取，仅适用于低安全性数据交互</h2>
+<h3>数据的验证流程：前端首先将withCredentials: true，后端使用sessionId+redis统一保存/获取数据，与前端url携带的参数进行校验</h3>
 
-`AI:please wait...`
+
+
 `在Vue3中，可以通过使用sessionStorage来保存数据到会话作用域中，并设置一个过期时间来实现数据在一定时间后过期。下面是一个简单的示例代码演示如何实现：`
 `1. 在一个Vue组件中设置数据到sessionStorage中并设置过期时间：`
-
 ```javascript
 // 在一个Vue组件中设置数据到sessionStorage中
 sessionStorage.setItem('userData', JSON.stringify({ name: 'John Doe' }));

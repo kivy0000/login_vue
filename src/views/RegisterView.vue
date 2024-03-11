@@ -64,6 +64,7 @@ import {ElMessage} from 'element-plus'
 //引入axios对象
 import request from "@/utils/request";
 
+
 export default {
   name: 'register',
   components: {},
@@ -86,29 +87,30 @@ export default {
         this.open("请输入验证码", 'warning');
         return;
       }
-      //判断验证码是否正确
-      if (this.form.icode === this.form.vcode && this.form.icode !== '') {
-        request.put("/api/register", this.form).then(res => {
-              // console.log(res)
-              //判断是否注册成功
-              if (res.code === 200) {
-                this.open("注册成功，3秒后自动返回登陆页面", 'success', 3000,
-                    () => {
-                      //将注册表单数据转交到登陆页面
-                      localStorage.setItem('loginData', JSON.stringify(this.form));
-                      //注册完成使验证码失效
-                      this.form.icode = '';
-                      this.jumpRouter('/');
-                    }
-                );
-              } else {
-                this.open("注册失败，请检查账户名/邮箱", 'error')
-              }
+      var item = sessionStorage.getItem('expireTime');
+      //判断验证码是否正确,交给后端
+      request.post("/api/register/" + this.form.vcode + "/" + item, this.form).then(res => {
+            // console.log(res)
+            //判断是否注册成功
+            if (res.code === 200) {
+              this.open("注册成功，3秒后自动返回登陆页面", 'success', 3000,
+                  () => {
+                    //将注册表单数据转交到登陆页面
+                    localStorage.setItem('loginData', JSON.stringify(this.form));
+                    //注册完成使验证码失效,交给后端
+                    this.jumpRouter('/');
+                  }
+              );
+            } else if (res.code === 300) {
+              this.open("验证码已过期", 'warning')
+            } else if (res.code === 600) {
+              this.open("验证码错误", 'warning')
+            } else {
+              this.open("注册失败，请检查验证码", 'error')
             }
-        )
-      } else {
-        this.open("验证码校验失败,请检查", 'warning')
-      }
+          }
+      )
+
 
     },
 
@@ -124,14 +126,17 @@ export default {
         return;
       }
       //向后端发送请求验证码的通知,异步，
-      request.put("/api/getVcode", this.form).then(res => {
+      request.post("/api/getVcode", this.form).then(res => {
             // console.log(res);
             //接收状态码
             demo = res.code;
             //判断验证码是否发送成功
             if (res.code === 200) {
-              this.open('向' + vemail + '发送验证码成功', "success");
-              this.form.icode = res.vcode
+              this.open('验证码发送成功，有效期120s', "success");
+              //验证码不应使用明文,使用sessionid+redis验证，在注册方法中进行验证
+              //设置过期时间，两分钟
+              const expireTime = new Date().getTime() + 120 * 1000;
+              sessionStorage.setItem('expireTime', expireTime);
             } else if (res.code === 300) {
               this.open("该账号/邮箱已注册", 'warning');
             } else {

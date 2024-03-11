@@ -1,10 +1,12 @@
 //引入axios
 import axios from "axios";
 
+
 //创建axios对象,叫request
 const request = axios.create({
     //要求在50s内请求完成
-    timeout: 50000
+    timeout: 50000,
+    withCredentials: true
 })
 
 //设置拦截器,格式设置为json，编码utf-8

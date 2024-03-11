@@ -146,15 +146,18 @@ export default {
         return;
       }
       //向后端发送重置密码通知,异步，
-      request.put("/api/reSetVcode", this.reform).then(res => {
+      request.post("/api/reSetVcode", this.reform).then(res => {
             // console.log(res);
             //接收状态码
             demo = res.code;
             //判断验证码是否发送成功
             if (demo === 200) {
-              this.open('向' + vemail + '发送验证码成功', "success");
+              this.open('验证码发送成功，有效期120s', "success");
               this.resetlock = false;
-              this.reform.icode = res.vcode
+              //验证码不应使用明文,使用sessionid+redis验证，在重置方法中进行验证
+              //设置过期时间，两分钟
+              const expireTime = new Date().getTime() + 120 * 1000;
+              sessionStorage.setItem('expireTime', expireTime);
             } else if (demo === 300) {
               this.open("该账号未注册，请注册", 'warning');
             } else if (demo === 500) {
@@ -194,9 +197,16 @@ export default {
 
     /**重置密码的方法*/
     resetPassword() {
-      //判断验证码是否正确
-      if (this.reform.icode === this.reform.vcode && this.reform.icode !== '') {
-        request.put("/api/resetPassword", this.reform).then(res => {
+      if (this.reform.username === '' || this.reform.password === '') {
+        this.open("请输入账号/密码", 'warning');
+        return;
+      }
+      if (this.reform.vcode === '') {
+        this.open("请输入验证码", 'warning');
+        return;
+      }
+      var item = sessionStorage.getItem('expireTime');
+        request.put("/api/resetPassword/"+ this.reform.vcode + "/" + item, this.reform).then(res => {
               // console.log(res)
               //判断是否重置成功
               if (res.code === 200) {
@@ -209,14 +219,16 @@ export default {
 
                     }
                 );
+              }else if (res.code === 300) {
+                this.open("验证码已过期", 'warning')
+              } else if (res.code === 600) {
+                this.open("验证码错误", 'warning')
               } else {
-                this.open("重置失败，请检查账户名/邮箱", 'error')
+                this.open("重置失败，请检查验证码", 'error')
               }
             }
         )
-      } else {
-        this.open("验证码校验失败,请检查", 'warning')
-      }
+
 
     },
 
