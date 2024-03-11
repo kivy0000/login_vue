@@ -89,7 +89,7 @@ export default {
       //判断验证码是否正确
       if (this.form.icode === this.form.vcode && this.form.icode !== '') {
         request.put("/api/register", this.form).then(res => {
-              console.log(res)
+              // console.log(res)
               //判断是否注册成功
               if (res.code === 200) {
                 this.open("注册成功，3秒后自动返回登陆页面", 'success', 3000,
@@ -125,7 +125,7 @@ export default {
       }
       //向后端发送请求验证码的通知,异步，
       request.put("/api/getVcode", this.form).then(res => {
-            console.log(res);
+            // console.log(res);
             //接收状态码
             demo = res.code;
             //判断验证码是否发送成功

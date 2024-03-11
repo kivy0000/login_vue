@@ -101,7 +101,7 @@ export default {
     //从注册页面填充（如果有），通过本地缓存，同样可作为登陆超时判定
     this.Rparse = JSON.parse(localStorage.getItem('loginData'));
     if (this.Rparse !== null) {
-      console.log(this.Rparse);
+      // console.log(this.Rparse);
       if (this.Rparse.username) {
         this.form.username = this.Rparse.username;
       }
@@ -147,7 +147,7 @@ export default {
       }
       //向后端发送重置密码通知,异步，
       request.put("/api/reSetVcode", this.reform).then(res => {
-            console.log(res);
+            // console.log(res);
             //接收状态码
             demo = res.code;
             //判断验证码是否发送成功
@@ -197,7 +197,7 @@ export default {
       //判断验证码是否正确
       if (this.reform.icode === this.reform.vcode && this.reform.icode !== '') {
         request.put("/api/resetPassword", this.reform).then(res => {
-              console.log(res)
+              // console.log(res)
               //判断是否重置成功
               if (res.code === 200) {
                 this.open("重置密码成功", 'success', 3000,
