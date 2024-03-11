@@ -15,7 +15,8 @@ register:
   registrationVerificationCode:  /api/getVcode
 <h3>attention:</h3>
 1. Some contents need to be specifically configured in request.js, vue.config.js, and vue files.
-2. Data in the session need be read for expiration verification on the service interface to which the session is switched
+2.token and verification code need to read session or redis data for verification, redis is not used at present, if you need, you can also add your own;
+to Be Continued......
 -------------------------------------------------------------------------------------------
 
 <h1>登录和注册页面</h1>
@@ -36,5 +37,6 @@ register:
   注册验证码:  /api/getVcode
 
 <h3>注意:</h3>
-1.部分内容需要在request.js和vue.config.js，以及vue文件中具体配置
-2.跳转到的业务界面需要读取session中的数据做过期验证
+1.部分内容需要在request.js和vue.config.js,以及vue文件中具体配置;
+2.token和验证码需要读取session/redis的数据做校验,目前未使用redis，如果你有需要，也可以自己添加;
+未完待续......
