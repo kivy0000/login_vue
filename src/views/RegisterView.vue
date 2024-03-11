@@ -197,17 +197,15 @@ export default {
     //前端校验规则,后端校验规则采取提示信息,不再使用表单校验-
     const logrules = reactive({
       username: [
-        //对账号的校验规则
-        //  required 是否必填项,已在登陆方法中提示,这里不使用了
-        // message 提示信息
-        //trigger 逻辑触发方式
+        //账号校验规则
+        //required 是否必填项,已在登陆方法中提示,这里不使用了,message 提示信息,trigger 逻辑触发方式
         {required: false, message: "请输入账号", trigger: "blur"},
         {pattern: /^[A-Za-z0-9]{6,18}$/, message: "账号格式错误,长度6-18", trigger: "blur"}
       ],
       password: [
         //密码校验规则
         {required: false, message: "请输入密码", trigger: "blur"},
-        {pattern: /^[A-Za-z0-9]{6,18}$/, message: "密码格式错误,长度6-18", trigger: "blur"}
+        {pattern: /^[a-zA-Z0-9_.-]{6,18}$/, message: "密码格式错误,长度6-18", trigger: "blur"}
       ],
       email: [
         //邮箱校验规则

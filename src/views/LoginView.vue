@@ -263,21 +263,32 @@ export default {
 
       //登陆逻辑实际验证
       request.post("/api/login", this.form).then(res => {
-            console.log(res)
-            console.log(res.info);
-            this.open(res.test, res.vcode);
-            //登陆成功
             if (res.code === 200) {
-              //保存到session中
+              //登陆成功 console.log(res);console.log(res.info);
+              // console.log(res.info[0]);
+              /**保存到session中,或者通过路由传递id，但不推荐*/
+              sessionStorage.setItem('userData', res.info[0]);
+              // 设置一个过期时间为1小时后
+              const expireTime = new Date().getTime() + 60 * 60 * 1000;
+              sessionStorage.setItem('expireTime', expireTime);
+              //组件读取在session过期提示.md文件中,这里演示一下
+              // const userData = sessionStorage.getItem('userData');
+              // // 获取过期时间并检查是否已经过期
+              // const expireTime01 = sessionStorage.getItem('expireTime');
+              // if (new Date().getTime() > parseInt(expireTime01)) {
+              //   // 数据已过期
+              //   console.log('Data has expired');
+              // } else {
+              //   // 数据未过期
+              //   console.log(userData);
+              // }
             }
-            this.form.disabledButton = false;
-        //登陆成功
-        this.notiOpen(res.test, res.vcode, this.form.username);
+            //提示信息
+            this.notiOpen(res.test, res.vcode, this.form.username);
 
           }
       )
-
-
+      this.form.disabledButton = false;
     }
   },
   setup() {
@@ -322,17 +333,17 @@ export default {
       password: [
         //密码校验规则
         {required: false, message: "请输入密码", trigger: "blur"},
-        {pattern: /^[A-Za-z0-9]{6,18}$/, message: "密码格式错误,长度6-18", trigger: "blur"}
+        {pattern: /^[a-zA-Z0-9_.-]{6,18}$/, message: "密码格式错误,长度6-18", trigger: "blur"}
       ],
       email: [
         //邮箱校验规则
         {required: false, message: "请输入邮箱", trigger: "blur"},
-        {pattern: /^[A-Za-z0-9]{6,18}$/, message: "邮箱格式错误,请检查", trigger: "blur"}
+        {pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/, message: "邮箱格式错误,请检查", trigger: "blur"}
       ],
       vcode: [
         //验证码校验规则
         {required: false, message: "请输入验证码", trigger: "blur"},
-        {pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/, message: "验证码格式错误,请检查", trigger: "blur"}
+        {pattern: /^[0-9]{6}$/, message: "验证码格式错误,请检查", trigger: "blur"}
       ],
 
     })
