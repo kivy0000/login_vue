@@ -17,7 +17,7 @@ register:
 1. Some contents need to be specifically configured in request.js, vue.config.js, and vue files.
 2.token and verification code need to read session or redis data for verification, redis is not used at present, if you need, you can also add your own;
 to Be Continued......
--------------------------------------------------------------------------------------------
+<h2>-------------------------------------------------------------------------------------------</h2>
 
 <h1>登录和注册页面</h1>
 <h2>版本 0.5 (简单可用版本)</h2>
