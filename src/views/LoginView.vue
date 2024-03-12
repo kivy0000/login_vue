@@ -1,4 +1,5 @@
 <template>
+
   <!--  登陆页面  -->
   <div class="login-container">
 
@@ -425,10 +426,11 @@ export default {
 
 /*背景图*/
 .imgeBack {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  position: fixed;
+  width: 1920px;
+  height: 1080px;
   z-index: 0;
 }
+
 
 </style>

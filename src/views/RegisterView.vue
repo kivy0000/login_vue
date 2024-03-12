@@ -272,9 +272,9 @@ export default {
 }
 
 .imgeBack {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  position: fixed;
+  width: 1920px;
+  height: 1080px;
   z-index: 0;
 }
 

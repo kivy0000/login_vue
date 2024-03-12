@@ -20,6 +20,7 @@ export default {
 </script>
 
 <style scoped>
+
 </style>
 <!--下面是模板
 可以通过以下步骤来实现在打开界面时播放指定音频的功能：
