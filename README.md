@@ -15,7 +15,9 @@ register:
   registrationVerificationCode:  /api/getVcode
 <h3>attention:</h3>
 1. Some contents need to be specifically configured in request.js, vue.config.js, and vue files.
-2.token and verification code need to read session or redis data for verification, redis is not used at present, if you need, you can also add your own;
+2.The back-end section is named login vue web and is not in the current repository, please download a match as well
+3.token and verification code need to read session or redis data for verification, redis is not used at present, if you need, you can also add your own;
+3.
 to Be Continued......
 <h2>-------------------------------------------------------------------------------------------</h2>
 
@@ -38,5 +40,6 @@ to Be Continued......
 
 <h3>注意:</h3>
 1.部分内容需要在request.js和vue.config.js,以及vue文件中具体配置;
-2.token和验证码需要读取session/redis的数据做校验,目前未使用redis，如果你有需要，也可以自己添加;
+2.后端部分命名为login_vue_web,不在当前储存库中，另请下载匹配;
+3.token和验证码需要读取session/redis的数据做校验,目前未使用redis，如果你有需要，也可以自己添加;
 未完待续......
