@@ -277,27 +277,10 @@ export default {
       //登陆逻辑实际验证
       request.post("/api/login", this.form).then(res => {
             if (res.code === 200) {
-              //登陆成功 console.log(res);console.log(res.info);
-              // console.log(res.info[0]);
-              /**保存到session中,或者通过路由传递id，但不推荐*/
-              sessionStorage.setItem('userData', res.info[0]);
-              // 设置一个过期时间为1小时后
-              const expireTime = new Date().getTime() + 60 * 60 * 1000;
-              sessionStorage.setItem('expireTime', expireTime);
-              //组件读取在session过期提示.md文件中,这里演示一下
-              // const userData = sessionStorage.getItem('userData');
-              // // 获取过期时间并检查是否已经过期
-              // const expireTime01 = sessionStorage.getItem('expireTime');
-              // if (new Date().getTime() > parseInt(expireTime01)) {
-              //   // 数据已过期
-              //   console.log('Data has expired');
-              // } else {
-              //   // 数据未过期
-              //   console.log(userData);
-              // }
+              //跳转,userdata和expiretime已经在session中
             }
             //提示信息
-            this.notiOpen(res.test, res.vcode, this.form.username);
+            this.notiOpen(res.text, res.vcode, this.form.username);
 
           }
       )

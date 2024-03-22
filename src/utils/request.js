@@ -6,6 +6,7 @@ import axios from "axios";
 const request = axios.create({
     //要求在50s内请求完成
     timeout: 50000,
+    /**允许cookie传递sessionId*/
     withCredentials: true
 })
 
