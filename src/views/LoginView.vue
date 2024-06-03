@@ -47,10 +47,10 @@
     <!--   登录卡片   -->
     <el-card class="login-card">
       <!--      logo-->
-      <el-image class="logo-image" :src="require('../assets/logo.jpg')"/>
+      <el-image class="logo-image" :src="require('../assets/bird.jpg')"/>
 
       <!--   主标题   -->
-      <el-text class="titleText" tag="b">BOM登陆测试界面</el-text>
+      <el-text class="titleText" tag="b">LOGIN TEST INTERFACE</el-text>
 
       <!-- 登陆表单     -->
       <div class="formStyle">
@@ -71,7 +71,8 @@
 
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" style="width: 280px;margin: auto" size="large" @click="jumpRouter('/register')">注册
+            <el-button type="primary" style="width: 280px;margin: auto" size="large" @click="jumpComponent('Register')">
+              注册
             </el-button>
           </el-form-item>
           <el-form-item>
@@ -90,6 +91,7 @@
 import {reactive} from 'vue';
 import {ElMessage} from 'element-plus'
 import {ElNotification} from 'element-plus'
+import {useRouter, useRoute} from 'vue-router'
 //引入axios对象
 import request from "@/utils/request";
 import {ref} from 'vue';
@@ -97,6 +99,10 @@ import {ref} from 'vue';
 export default {
   name: 'Login',
   components: {},
+  //事件触发数组
+  emits: [
+    'changeRouterUrl'
+  ],
   created() {
     this.Rparse = {};
     //从注册页面填充（如果有），通过本地缓存，同样可作为登陆超时判定
@@ -113,10 +119,7 @@ export default {
     }
   },/*// 初始化钩子函数，不在method里面*/
   methods: {
-    //跳转路由的方法
-    jumpRouter(str) {
-      this.$router.push(str);
-    },
+
 
     //打开忘记密码表单
     userForget() {
@@ -127,13 +130,13 @@ export default {
     /**
      * @param str 提示信息
      * @param type 提示类型 success、warning等
+     * @param duration 等待时间(毫秒)
      */
-    open(str, type, duration, onClose) {
+    open(str, type, duration) {
       ElMessage({
         message: str,
         type: type,
-        duration: duration, //等待时间
-        onClose: onClose,
+        duration: duration, //等待时间(毫秒)
       })
     },
 
@@ -207,28 +210,27 @@ export default {
         return;
       }
       var item = sessionStorage.getItem('expireTime');
-        request.put("/api/resetPassword/"+ this.reform.vcode + "/" + item, this.reform).then(res => {
-              // console.log(res)
-              //判断是否重置成功
-              if (res.code === 200) {
-                this.open("重置密码成功", 'success', 3000,
-                    () => {
-                      //注册完成使验证码失效
-                      this.reform.icode = '';
-                      //关闭页面
-                      this.logform.dialogVisible = false;
+      request.put("/api/resetPassword/" + this.reform.vcode + "/" + item, this.reform).then(res => {
+        // console.log(res)
+        //判断是否重置成功
+        if (res.code === 200) {
+          this.open("重置密码成功", 'success', 3000,
+              () => {
+                //注册完成使验证码失效
+                this.reform.icode = '';
+                //关闭页面
+                this.logform.dialogVisible = false;
 
-                    }
-                );
-              }else if (res.code === 300) {
-                this.open("验证码已过期", 'warning')
-              } else if (res.code === 600) {
-                this.open("验证码错误", 'warning')
-              } else {
-                this.open("重置失败，请检查验证码", 'error')
               }
-            }
-        )
+          );
+        } else if (res.code === 300) {
+          this.open("验证码已过期", 'warning')
+        } else if (res.code === 600) {
+          this.open("验证码错误", 'warning')
+        } else {
+          this.open("重置失败，请检查验证码", 'error')
+        }
+      })
 
 
     },
@@ -287,7 +289,7 @@ export default {
       this.form.disabledButton = false;
     }
   },
-  setup() {
+  setup(props, ctx) {
     //也可以在script中直接添加表单
     //登陆表单
     const form = reactive({
@@ -300,6 +302,7 @@ export default {
       registerTime: 0, //获取验证码倒计时
       icode: '',//服务端获取的验证码
     });
+
     //重置密码用的表单
     const reform = reactive({
       username: '',
@@ -311,6 +314,7 @@ export default {
       registerTime: 0, //获取验证码倒计时
       icode: '',//服务端获取的验证码
     });
+
     //使用reactive、ref等方法来创建响应式数据和引用数据
     const logform = reactive({
       dialogVisible: false,
@@ -344,8 +348,13 @@ export default {
 
     })
 
+    //使用事件触发父组件app的 @changeMain="changeRouterUrl" 方法//跳转组件
+    const jumpComponent = (targetComponent) => {
+      ctx.emit('changeRouterUrl', targetComponent);
+    }
+
     return {
-      form, reform, logform, resetlock, logrules,
+      form, reform, logform, resetlock, logrules,jumpComponent,
     };
   },
 };
@@ -403,8 +412,11 @@ export default {
 
 /*logo*/
 .logo-image {
-  width: 50%;
-  height: 50%;
+  width: 140px;
+  height: 60px;
+  margin: auto; /* 居中显示 */
+  justify-content: center; /* 居中对齐 */
+  opacity: 0.7;
 }
 
 /*背景图*/

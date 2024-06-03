@@ -5,15 +5,15 @@ import Register from "@/views/RegisterView";
 
 const routes = [
   {
-    path: '/',
+    // path: '/',
     name: 'login',
     component: Login
   },
-  {
-    path: '/register',
-    name: 'register',
-    component: Register
-  },
+  // {
+  //   path: '/register',
+  //   name: 'register',
+  //   component: Register
+  // },
 
 
 

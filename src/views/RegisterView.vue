@@ -9,10 +9,10 @@
 
     <!--注册卡片-->
     <el-card class="login-card">
-      <el-image class="logo-image" :src="require('../assets/logo.jpg')"/>
+      <el-image class="logo-image" :src="require('../assets/bird.jpg')"/>
 
       <!--  主标题-->
-      <el-text class="titleText" tag="b">BOM注册测试界面</el-text>
+      <el-text class="titleText" tag="b">REGISTRATION TEST INTERFACE</el-text>
 
       <!-- 注册表单-->
       <div class="formStyle">
@@ -34,11 +34,11 @@
           <!--   仍有样式需要调整，目前class和style混合使用       -->
           <el-form-item label="验证码" style="font-size: 20px" prop="vcode">
             <el-input v-model="form.vcode" class="w-50 m-2" placeholder="验证码"
-                      style="width: 115px"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                      style="width: 100px"/>
             <el-button type="primary"
                        size="default"
-                       style="width: 75px"
-                       :disabled="form.disabledButton"
+                       style="width: 95px;margin-left: 15px"
+                       :loading="form.disabledButton"
                        @click="getVcode(this.form.email)">{{ form.registerText }}
             </el-button>
           </el-form-item>
@@ -46,7 +46,7 @@
           <el-form-item>
             <el-button type="primary" size="large" style="width: 320px" @click="registerUser">注册
             </el-button>
-            <el-link type="primary" @click="jumpRouter('/')">返回登录</el-link>
+            <el-link type="primary" @click="jumpComponent('Login')">返回登录</el-link>
           </el-form-item>
 
         </el-form>
@@ -63,16 +63,19 @@ import {reactive} from 'vue';
 import {ElMessage} from 'element-plus'
 //引入axios对象
 import request from "@/utils/request";
+import {useRouter, useRoute} from 'vue-router'
 
 
 export default {
   name: 'register',
   components: {},
+  //事件触发数组
+  emits: [
+    'changeRouterUrl'
+  ],
   methods: {
     /*跳转路由的方法*/
-    jumpRouter(str) {
-      this.$router.push(str);
-    },
+
     /*
     In this optimized code snippet, unnecessary comments and unused elements have been removed to make the code cleaner and more concise. The structure of the template and script sections has been maintained, and the styling is also included in the scoped style section.
     ------------------------------
@@ -187,7 +190,13 @@ export default {
       })
     },
   },
-  setup() {
+  setup(props, ctx) {
+
+    //使用事件触发父组件app的 @changeMain="changeRouterUrl" 方法//跳转组件
+    const jumpComponent = (targetComponent) => {
+      ctx.emit('changeRouterUrl', targetComponent);
+    }
+
     const form = reactive({
       username: '',
       password: '',
@@ -228,6 +237,7 @@ export default {
     return {
       form,
       logrules,
+      jumpComponent,
     };
   },
 };
@@ -279,10 +289,11 @@ export default {
 }
 
 .logo-image {
-  width: 50%;
-  height: 50%;
+  width: 140px;
+  height: 60px;
   margin: auto; /* 居中显示 */
   justify-content: center; /* 居中对齐 */
+  opacity: 0.7;
 }
 
 </style>
